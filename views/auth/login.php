@@ -80,7 +80,7 @@
                     <div class="space-y-2 text-xs">
                         <div class="bg-blue-50 p-3 rounded">
                             <p class="font-semibold text-blue-900">Admin:</p>
-                            <p class="text-blue-700">admin@lemigas.ac.id / password</p>
+                            <p class="text-blue-700">admin@lemigas.ac.id / admin123</p>
                         </div>
                         <div class="bg-green-50 p-3 rounded">
                             <p class="font-semibold text-green-900">Peserta:</p>

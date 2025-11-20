@@ -1,63 +1,60 @@
 <?php
-// session_start();
-require_once '../../config.php';
-require_once '../../src/helpers/helper.php';
+// src/controllers/EvaluasiController.php
+require_once __DIR__ . '/../../config.php';
+require_once __DIR__ . '/../../src/helpers/helper.php';
 
-$action = $_GET['action'] ?? '';
-
-if ($action === 'simpan') {
-    simpanEvaluasiProcess();
+if (!isAdmin()) {
+    json_response(false, 'Akses ditolak. Admin only.');
 }
 
-function simpanEvaluasiProcess() {
-    global $conn;
-    
-    if (!isAdmin()) {
-        json_response(false, 'Unauthorized - Admin only');
-    }
-    
-    $data = json_decode(file_get_contents("php://input"), true);
-    
-    $pendaftar_id = (int)$data['pendaftar_id'];
-    $nilai_kehadiran = (int)$data['nilai_kehadiran'];
-    $nilai_kinerja = (int)$data['nilai_kinerja'];
-    $nilai_sikap = (int)$data['nilai_sikap'];
-    $komentar = $conn->real_escape_string($data['komentar'] ?? '');
-    
-    // Validasi nilai
-    if ($nilai_kehadiran < 0 || $nilai_kehadiran > 100 ||
-        $nilai_kinerja < 0 || $nilai_kinerja > 100 ||
-        $nilai_sikap < 0 || $nilai_sikap > 100) {
-        json_response(false, 'Nilai harus antara 0-100');
-    }
-    
-    // Hitung rata-rata
-    $rata_rata = ($nilai_kehadiran + $nilai_kinerja + $nilai_sikap) / 3;
-    
-    // Check if evaluasi exists
-    $check = $conn->query("SELECT id FROM evaluasi WHERE pendaftar_id = $pendaftar_id");
-    
-    if ($check->num_rows > 0) {
-        $result = $conn->query("UPDATE evaluasi SET 
-                               nilai_kehadiran = $nilai_kehadiran,
-                               nilai_kinerja = $nilai_kinerja,
-                               nilai_sikap = $nilai_sikap,
-                               rata_rata = $rata_rata,
-                               komentar = '$komentar',
-                               status = 'selesai'
-                               WHERE pendaftar_id = $pendaftar_id");
-    } else {
-        $result = $conn->query("INSERT INTO evaluasi 
-                               (pendaftar_id, nilai_kehadiran, nilai_kinerja, nilai_sikap, rata_rata, komentar, status)
-                               VALUES 
-                               ($pendaftar_id, $nilai_kehadiran, $nilai_kinerja, $nilai_sikap, $rata_rata, '$komentar', 'selesai')");
-    }
-    
-    if ($result) {
-        json_response(true, 'Evaluasi berhasil disimpan');
-    } else {
-        json_response(false, 'Gagal menyimpan evaluasi: ' . $conn->error);
-    }
+// Hanya terima POST JSON
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    json_response(false, 'Method tidak diizinkan');
 }
 
+$data = json_decode(file_get_contents("php://input"), true);
+
+if (!$data) {
+    json_response(false, 'Data JSON tidak valid');
+}
+
+$pendaftar_id   = (int)($data['pendaftar_id'] ?? 0);
+$kehadiran      = (int)($data['nilai_kehadiran'] ?? 0);
+$kinerja        = (int)($data['nilai_kinerja'] ?? 0);
+$sikap          = (int)($data['nilai_sikap'] ?? 0);
+$komentar       = $conn->real_escape_string($data['komentar'] ?? '');
+
+if ($pendaftar_id <= 0 || $kehadiran < 0 || $kehadiran > 100 || $kinerja < 0 || $kinerja > 100 || $sikap < 0 || $sikap > 100) {
+    json_response(false, 'Data tidak valid atau nilai di luar rentang 0-100');
+}
+
+$rata_rata = round(($kehadiran + $kinerja + $sikap) / 3, 2);
+
+// Cek apakah sudah ada evaluasi
+$check = $conn->query("SELECT id FROM evaluasi WHERE pendaftar_id = $pendaftar_id");
+
+if ($check && $check->num_rows > 0) {
+    // UPDATE
+    $sql = "UPDATE evaluasi SET 
+            nilai_kehadiran = $kehadiran,
+            nilai_kinerja = $kinerja,
+            nilai_sikap = $sikap,
+            rata_rata = $rata_rata,
+            komentar = '$komentar',
+            status = 'selesai',
+            updated_at = NOW()
+            WHERE pendaftar_id = $pendaftar_id";
+} else {
+    // INSERT
+    $sql = "INSERT INTO evaluasi 
+            (pendaftar_id, nilai_kehadiran, nilai_kinerja, nilai_sikap, rata_rata, komentar, status, created_at)
+            VALUES 
+            ($pendaftar_id, $kehadiran, $kinerja, $sikap, $rata_rata, '$komentar', 'selesai', NOW())";
+}
+
+if ($conn->query($sql)) {
+    json_response(true, 'Evaluasi berhasil disimpan! Nilai akhir: ' . $rata_rata);
+} else {
+    json_response(false, 'Gagal simpan ke database: ' . $conn->error);
+}
 ?>

@@ -1,0 +1,37 @@
+<table border='1'><tr style='background:#1d4ed8;color:white;font-weight:bold'>
+        <th>No</th><th>Nama</th><th>Email</th><th>NIM</th><th>Universitas</th><th>Jurusan</th>
+        <th>No HP</th><th>Bidang Minat</th><th>Status</th><th>Tanggal Daftar</th>
+      </tr><tr>
+            <td>1</td>
+            <td>Rizky Dwi Rayhan</td>
+            <td>rizkyrayhan123@gmail.com</td>
+            <td>23312171</td>
+            <td>Universitas Teknokrat Indonesia</td>
+            <td>Informatika</td>
+            <td>0896745378231</td>
+            <td>Oil</td>
+            <td>Diterima</td>
+            <td>18/11/2025</td>
+          </tr><tr>
+            <td>2</td>
+            <td>Siti Nurhaliza</td>
+            <td>siti@mahasiswa.ac.id</td>
+            <td>2021001234</td>
+            <td>Universitas Indonesia</td>
+            <td>Teknik Informatika</td>
+            <td>081234567890</td>
+            <td>Oil & Gas Technology</td>
+            <td>Ditolak</td>
+            <td>15/01/2024</td>
+          </tr><tr>
+            <td>3</td>
+            <td>Budi Santoso</td>
+            <td>budi@mahasiswa.ac.id</td>
+            <td>2021001235</td>
+            <td>Universitas Padjadjaran</td>
+            <td>Sistem Informasi</td>
+            <td>082345678901</td>
+            <td>Oil & Gas Technology</td>
+            <td>Diterima</td>
+            <td>15/01/2024</td>
+          </tr></table>

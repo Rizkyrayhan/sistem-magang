@@ -42,16 +42,19 @@ $routes = [
     ''                          => 'views/landing.php',
     'landing'                   => 'views/landing.php',
 
+    'tesUpload'                     => 'tes-upload.php',
+
     'login'                     => 'views/auth/login.php',
     'register'                  => 'views/auth/register.php',
 
     // Admin Routes
     'admin'                     => 'views/admin/dashboard.php',
-    'admin/dashboard'                   => 'views/admin/dashboard.php',
+    'admin/dashboard'           => 'views/admin/dashboard.php',
     'admin/dashboard'           => 'views/admin/dashboard.php',
     'admin/data-pendaftar'      => 'views/admin/data-pendaftar.php',
     'admin/evaluasi'            => 'views/admin/evaluasi.php',
     'admin/laporan'             => 'views/admin/laporan.php',
+    'admin/detail-pendaftar'    => 'views/admin/detail-pendaftar.php',
 
     // User Routes
     'user'                      => 'views/user/dashboard.php',
@@ -66,6 +69,12 @@ $routes = [
     'api/get-pendaftar'         => 'src/controllers/DaftarController.php',
     'api/tambah-pendaftar'      => 'src/controllers/DaftarController.php',
     'api/simpan-evaluasi'       => 'src/controllers/EvaluasiController.php',
+    'api/upload'                => 'src/controllers/UploadController.php',
+    'admin/export-excel'        => 'src/controllers/ExportExcel.php',
+    'api/set-status'            => 'src/controllers/SetStatusController.php',
+
+
+
 
     'generate-password'         => 'generate-password.php',
 ];
@@ -97,11 +106,15 @@ if ($needLogin) {
 // ==================================================================
 if (strpos($route, 'api/') === 0) {
     $actionMap = [
-        'api/login'            => 'login',
-        'api/register'         => 'register',
-        'api/get-pendaftar'    => 'getPendaftar',
-        'api/tambah-pendaftar' => 'tambah',
-        'api/simpan-evaluasi'  => 'simpan',
+        'api/login'              => 'login',
+        'api/register'           => 'register',
+        'api/get-pendaftar'      => 'getPendaftar',
+        'api/tambah-pendaftar'   => 'tambah',
+        'api/simpan-evaluasi'    => 'simpan',
+        'api/upload'             => 'upload',
+        'admin/detail-pendaftar' => 'detailPendaftar',
+        'admin/export-excel'     => 'exportExcel',
+        'api/set-status'         => 'setStatus',
     ];
     $_GET['action'] = $actionMap[$route] ?? '';
 }

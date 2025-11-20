@@ -14,46 +14,16 @@ $evaluasi = $pendaftar ? getEvaluasi($conn, $pendaftar['id']) : null;
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Hasil Evaluasi - LEMIGAS</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
 </head>
 <body class="bg-gray-50">
     <div class="flex">
         <!-- Sidebar -->
-        <div class="w-64 bg-white shadow-lg min-h-screen">
-            <div class="p-6 border-b border-gray-200">
-                <div class="flex items-center space-x-3">
-                    <div class="w-10 h-10 bg-gradient-to-br from-blue-400 to-blue-600 rounded-lg flex items-center justify-center text-white font-bold">
-                        <?php echo strtoupper(substr($user['nama'], 0, 1)); ?>
-                    </div>
-                    <div>
-                        <h1 class="font-bold text-gray-800 text-sm"><?php echo $user['nama']; ?></h1>
-                        <p class="text-xs text-gray-500">Peserta Magang</p>
-                    </div>
-                </div>
-            </div>
-
-            <nav class="p-4 space-y-2">
-                <a href="<?php echo SITE_URL; ?>user/dashboard" class="flex items-center space-x-3 px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg">
-                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4z"/></svg>
-                    <span>Dashboard</span>
-                </a>
-                <a href="<?php echo SITE_URL; ?>user/status-pendaftaran" class="flex items-center space-x-3 px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg">
-                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"/></svg>
-                    <span>Status Pendaftaran</span>
-                </a>
-                <a href="<?php echo SITE_URL; ?>user/hasil-evaluasi" class="flex items-center space-x-3 px-4 py-3 bg-blue-50 text-blue-600 rounded-lg font-medium">
-                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M5 3a2 2 0 00-2 2v6h16V5a2 2 0 00-2-2H5z"/></svg>
-                    <span>Hasil Evaluasi</span>
-                </a>
-                <hr class="my-4">
-                <a href="<?php echo SITE_URL; ?>logout" class="flex items-center space-x-3 px-4 py-3 text-red-600 hover:bg-red-50 rounded-lg">
-                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M3 3a1 1 0 011 1v12a1 1 0 11-2 0V4a1 1 0 011-1z"/></svg>
-                    <span>Logout</span>
-                </a>
-            </nav>
-        </div>
+        <?php $current = 'evaluasi'; ?>
+        <?php include __DIR__ . '/partials/sidebar.php'; ?>
 
         <!-- Main Content -->
-        <div class="flex-1">
+        <div class="main-content flex-1 overflow-y-auto bg-gray-50 min-h-screen">
             <!-- Header -->
             <div class="bg-gradient-to-r from-blue-600 to-blue-800 text-white p-8">
                 <div class="max-w-4xl">

@@ -1,5 +1,16 @@
 <?php
-// config.php - FULL VERSION (Tanpa .env & Tanpa .htaccess)
+// config.php - GUARD AGAINST REDECLARE
+
+// Jangan load config 2x
+if (defined('CONFIG_LOADED')) {
+    return;
+}
+define('CONFIG_LOADED', true);
+
+// Start session jika belum
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 
 // ==================================================================
 // ERROR REPORTING (Development = ON, Production = OFF)
@@ -8,12 +19,12 @@ error_reporting(E_ALL);
 ini_set('display_errors', 1); // Ubah jadi 0 di production!
 
 // ==================================================================
-// AUTO DETECT SITE_URL (bekerja di subfolder atau root)
+// AUTO DETECT SITE_URL
 // ==================================================================
 if (!defined('SITE_URL')) {
     $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https://' : 'http://';
     $host     = $_SERVER['HTTP_HOST'];
-    $dir      = dirname($_SERVER['SCRIPT_NAME']);           // contoh: /lemigas-magang
+    $dir      = dirname($_SERVER['SCRIPT_NAME']);
     $base     = ($dir === '/' || $dir === '\\') ? '' : rtrim($dir, '/');
     define('SITE_URL', $protocol . $host . $base . '/');
 }
@@ -26,11 +37,11 @@ define('SITE_NAME', 'LEMIGAS Magang');
 date_default_timezone_set('Asia/Jakarta');
 
 // ==================================================================
-// DATABASE CONFIGURATION (hardcode - tidak pakai .env)
+// DATABASE CONFIGURATION
 // ==================================================================
 define('DB_HOST', 'localhost');
 define('DB_USER', 'root');
-define('DB_PASS', '');              // kosongkan jika tidak ada password
+define('DB_PASS', '');
 define('DB_NAME', 'lemigas_magang');
 define('DB_PORT', 3306);
 
@@ -66,13 +77,24 @@ $sql_pendaftar = "CREATE TABLE IF NOT EXISTS `pendaftar` (
   `id` int NOT NULL AUTO_INCREMENT,
   `user_id` int NOT NULL UNIQUE,
   `nim` varchar(20),
-  `tempat_tanggal_lahir` varchar(100),
-  `jurusan` varchar(100),
-  `universitas` varchar(100),
-  `bidang_minat` varchar(100),
+  `tempat_lahir` varchar(100),
+  `tanggal_lahir` date,
+  `jenis_kelamin` varchar(20),
   `no_hp` varchar(15),
   `alamat` text,
-  `status` enum('menunggu','diterima','ditolak','proses') DEFAULT 'menunggu',
+  `universitas` varchar(100),
+  `jurusan` varchar(100),
+  `semester` int,
+  `ipk` decimal(3,2),
+  `bidang_minat` varchar(100),
+  `durasi_magang` varchar(50),
+  `tanggal_mulai` date,
+  `alasan` text,
+  `pas_foto` varchar(255),
+  `cv_file` varchar(255),
+  `surat_pengantar` varchar(255),
+  `ktm_file` varchar(255),
+  `status` enum('menunggu','diterima','ditolak','proses','selesai') DEFAULT 'menunggu',
   `tanggal_daftar` timestamp DEFAULT CURRENT_TIMESTAMP,
   `updated_at` timestamp DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
@@ -85,7 +107,7 @@ $sql_evaluasi = "CREATE TABLE IF NOT EXISTS `evaluasi` (
   `nilai_kehadiran` int,
   `nilai_kinerja` int,
   `nilai_sikap` int,
-  `rata_rata` decimal(5hi5,2),
+  `rata_rata` decimal(5,2),
   `status` enum('belum','selesai') DEFAULT 'belum',
   `komentar` text,
   `tanggal_evaluasi` timestamp DEFAULT CURRENT_TIMESTAMP,
@@ -94,9 +116,9 @@ $sql_evaluasi = "CREATE TABLE IF NOT EXISTS `evaluasi` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;";
 
 // Eksekusi pembuatan tabel
-$conn->query($sql_users);
-$conn->query($sql_pendaftar);
-$conn->query($sql_evaluasi);
+@$conn->query($sql_users);
+@$conn->query($sql_pendaftar);
+@$conn->query($sql_evaluasi);
 
 // ==================================================================
 // INSERT DATA DEMO (hanya jika tabel users masih kosong)
@@ -123,6 +145,5 @@ if ($row['count'] == 0) {
 }
 
 // ==================================================================
-// SELESAI - File config.php siap pakai!
-// ==================================================================
-?>
+// CONFIG SELESAI
+?>  

@@ -1,10 +1,25 @@
 <?php
-// session_start();
-// require_once '../../config.php';
-// require_once '../../src/helpers/helper.php';
+// views/admin/data-pendaftar.php
+require_once __DIR__ . '/../../config.php';
+require_once __DIR__ . '/../../src/helpers/helper.php';
 
-if (!isAdmin()) redirect('login');
+// Proteksi: Harus login + harus admin
+if (!isLoggedIn() || !isAdmin()) {
+    redirect('login');
+    exit;
+}
+
+$current = 'data-pendaftar';
+
+// Ambil semua pendaftar
+$pendaftar = $conn->query("
+    SELECT p.*, u.nama, u.email 
+    FROM pendaftar p 
+    JOIN users u ON p.user_id = u.id 
+    ORDER BY p.tanggal_daftar DESC
+");
 ?>
+
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -12,91 +27,104 @@ if (!isAdmin()) redirect('login');
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Data Pendaftar - LEMIGAS Admin</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        .table-row:hover { background-color: #f8fafc; transition: all 0.2s; }
+        .badge { font-size: 0.75rem; padding: 0.35rem 0.75rem; border-radius: 9999px; font-weight: 600; }
+    </style>
 </head>
-<body class="bg-gray-50">
-    <div class="flex">
-        <!-- Sidebar (sama seperti dashboard) -->
-        <div class="w-64 bg-white shadow-lg min-h-screen">
-            <div class="p-6 border-b border-gray-200">
-                <div class="flex items-center space-x-3">
-                    <div class="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center">
-                        <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M4 4h16v2H4V4zm0 7h16v2H4v-2zm0 7h16v2H4v-2z"/></svg>
-                    </div>
+<body class="bg-gray-100">
+    <div class="flex h-screen">
+        <?php include 'partials/sidebar.php'; ?>
+
+        <div class="flex-1 overflow-y-auto">
+            <div class="p-8">
+                <div class="flex justify-between items-center mb-8">
                     <div>
-                        <h1 class="font-bold text-gray-800">LEMIGAS</h1>
-                        <p class="text-xs text-gray-500">Admin Dashboard</p>
+                        <h1 class="text-3xl font-bold text-gray-800">Data Pendaftar Magang</h1>
+                        <p class="text-gray-600 mt-1">Kelola dan pantau seluruh pendaftar magang LEMIGAS</p>
                     </div>
-                </div>
-            </div>
-
-            <nav class="p-4 space-y-2">
-                <a href="<?php echo SITE_URL; ?>admin/dashboard" class="flex items-center space-x-3 px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg">
-                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4z"/></svg>
-                    <span>Dashboard</span>
-                </a>
-                <a href="<?php echo SITE_URL; ?>admin/data-pendaftar" class="flex items-center space-x-3 px-4 py-3 bg-blue-50 text-blue-600 rounded-lg font-medium">
-                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M9 6a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-                    <span>Data Pendaftar</span>
-                </a>
-                <a href="<?php echo SITE_URL; ?>admin/evaluasi" class="flex items-center space-x-3 px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg">
-                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"/></svg>
-                    <span>Evaluasi</span>
-                </a>
-                <a href="<?php echo SITE_URL; ?>admin/laporan" class="flex items-center space-x-3 px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg">
-                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4z"/></svg>
-                    <span>Laporan</span>
-                </a>
-                <hr class="my-4">
-                <a href="<?php echo SITE_URL; ?>logout" class="flex items-center space-x-3 px-4 py-3 text-red-600 hover:bg-red-50 rounded-lg">
-                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M3 3a1 1 0 011 1v12a1 1 0 11-2 0V4a1 1 0 011-1z"/></svg>
-                    <span>Logout</span>
-                </a>
-            </nav>
-        </div>
-
-        <!-- Main Content -->
-        <div class="flex-1">
-            <!-- Header -->
-            <div class="bg-white shadow-sm border-b border-gray-200 p-6">
-                <h2 class="text-2xl font-bold text-gray-800">Data Pendaftar</h2>
-                <p class="text-gray-600 text-sm">Kelola data mahasiswa yang mendaftar magang</p>
-            </div>
-
-            <!-- Content -->
-            <div class="p-6">
-                <!-- Filter & Search -->
-                <div class="bg-white rounded-lg shadow p-6 mb-6">
-                    <div class="flex flex-col md:flex-row gap-4">
-                        <input type="text" id="search" placeholder="Cari nama, email, atau NIM..." 
-                               class="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-                        <select id="statusFilter" class="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-                            <option value="semua">Semua Status</option>
-                            <option value="menunggu">Menunggu Review</option>
-                            <option value="diterima">Diterima</option>
-                            <option value="proses">Sedang Magang</option>
-                            <option value="ditolak">Ditolak</option>
-                        </select>
-                        <button onclick="loadPendaftar()" class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700">Filter</button>
-                    </div>
+                    <a href="<?= SITE_URL ?>admin/export-excel" class="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg shadow-lg flex items-center gap-3 transition">
+                        <i class="fas fa-file-excel"></i>
+                        <span>Export Excel</span>
+                    </a>
                 </div>
 
-                <!-- Table -->
-                <div class="bg-white rounded-lg shadow overflow-hidden">
+                <!-- Search & Filter -->
+                <div class="bg-white rounded-xl shadow-md p-6 mb-6 flex flex-col md:flex-row gap-4 items-center justify-between">
+                    <input type="text" id="searchInput" placeholder="Cari nama, NIM, universitas..." class="w-full md:w-96 px-5 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <select id="filterStatus" class="px-5 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <option value="">Semua Status</option>
+                        <option value="menunggu">Menunggu</option>
+                        <option value="diterima">Diterima</option>
+                        <option value="ditolak">Ditolak</option>
+                        <option value="proses">Sedang Magang</option>
+                        <option value="selesai">Selesai</option>
+                    </select>
+                </div>
+
+                <!-- Tabel Pendaftar -->
+                <div class="bg-white rounded-xl shadow-lg overflow-hidden">
                     <div class="overflow-x-auto">
-                        <table class="w-full">
-                            <thead>
-                                <tr class="bg-gray-50 border-b border-gray-200">
-                                    <th class="px-6 py-3 text-left text-sm font-medium text-gray-700">NO</th>
-                                    <th class="px-6 py-3 text-left text-sm font-medium text-gray-700">Nama</th>
-                                    <th class="px-6 py-3 text-left text-sm font-medium text-gray-700">NIM</th>
-                                    <th class="px-6 py-3 text-left text-sm font-medium text-gray-700">Jurusan</th>
-                                    <th class="px-6 py-3 text-left text-sm font-medium text-gray-700">Universitas</th>
-                                    <th class="px-6 py-3 text-left text-sm font-medium text-gray-700">Status</th>
-                                    <th class="px-6 py-3 text-left text-sm font-medium text-gray-700">Aksi</th>
+                        <table class="w-full" id="tablePendaftar">
+                            <thead class="bg-gradient-to-r from-blue-600 to-blue-800 text-white">
+                                <tr>
+                                    <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider">No</th>
+                                    <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider">Mahasiswa</th>
+                                    <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider">Jurusan</th>
+                                    <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider">Universitas</th>
+                                    <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider">Tgl Daftar</th>
+                                    <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider">Status</th>
+                                    <th class="px-6 py-4 text-center text-xs font-bold uppercase tracking-wider">Aksi</th>
                                 </tr>
                             </thead>
-                            <tbody id="tableBody">
-                                <tr><td colspan="7" class="text-center py-4 text-gray-500">Loading...</td></tr>
+                            <tbody class="divide-y divide-gray-200">
+                                <?php $no = 1; while ($p = $pendaftar->fetch_assoc()): ?>
+                                <tr class="table-row">
+                                    <td class="px-6 py-4 text-sm font-medium text-gray-900"><?= $no++ ?></td>
+                                    <td class="px-6 py-4">
+                                        <div class="flex items-center gap-4">
+                                            <div class="relative">
+                                                <?php if ($p['pas_foto']): ?>
+                                                    <img src="<?= file_url($p['pas_foto']) ?>" 
+                                                         alt="Foto <?= htmlspecialchars($p['nama']) ?>"
+                                                         class="w-12 h-12 rounded-full object-cover ring-4 ring-blue-100 shadow-md">
+                                                <?php else: ?>
+                                                    <div class="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-700 rounded-full flex items-center justify-center text-white font-bold text-lg shadow-md">
+                                                        <?= strtoupper(substr($p['nama'], 0, 1)) ?>
+                                                    </div>
+                                                <?php endif; ?>
+                                            </div>
+                                            <div>
+                                                <p class="font-semibold text-gray-900"><?= htmlspecialchars($p['nama']) ?></p>
+                                                <p class="text-sm text-gray-500"><?= $p['nim'] ?: 'NIM belum diisi' ?></p>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 text-sm text-gray-700"><?= htmlspecialchars($p['jurusan'] ?: '-') ?></td>
+                                    <td class="px-6 py-4 text-sm text-gray-700"><?= htmlspecialchars($p['universitas'] ?: '-') ?></td>
+                                    <td class="px-6 py-4 text-sm text-gray-600"><?= formatTanggalFull($p['tanggal_daftar']) ?></td>
+                                    <td class="px-6 py-4">
+                                        <?= getBadgeStatus($p['status']) ?>
+                                    </td>
+                                    <td class="px-6 py-4 text-center space-x-3">
+                                        <!-- LINK DETAIL SUDAH AMAN & TIDAK REDIRECT KE LOGIN -->
+                                        <a href="<?= SITE_URL ?>admin/detail-pendaftar?id=<?= $p['id'] ?>" 
+                                           class="text-indigo-600 hover:text-indigo-900 font-medium text-sm">
+                                            <i class="fas fa-eye"></i> Detail
+                                        </a>
+
+                                        <?php if ($p['status'] === 'menunggu'): ?>
+                                            <button onclick="ubahStatus(<?= $p['id'] ?>, 'diterima')" class="text-green-600 hover:text-green-800">
+                                                <i class="fas fa-check-circle text-lg"></i>
+                                            </button>
+                                            <button onclick="ubahStatus(<?= $p['id'] ?>, 'ditolak')" class="text-red-600 hover:text-red-800">
+                                                <i class="fas fa-times-circle text-lg"></i>
+                                            </button>
+                                        <?php endif; ?>
+                                    </td>
+                                </tr>
+                                <?php endwhile; ?>
                             </tbody>
                         </table>
                     </div>
@@ -105,104 +133,40 @@ if (!isAdmin()) redirect('login');
         </div>
     </div>
 
-    <!-- Modal Detail -->
-    <div id="modalDetail" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-        <div class="bg-white rounded-lg max-w-2xl w-full max-h-96 overflow-y-auto">
-            <div class="p-6 border-b border-gray-200 flex justify-between items-center">
-                <h3 class="text-xl font-bold text-gray-800">Detail Pendaftar</h3>
-                <button onclick="closeModal()" class="text-gray-500 hover:text-gray-700">✕</button>
-            </div>
-            <div id="modalContent" class="p-6 space-y-3">
-                <!-- Content akan diisi oleh JavaScript -->
-            </div>
-            <div class="p-6 border-t border-gray-200 flex gap-2">
-                <select id="statusSelect" class="flex-1 px-4 py-2 border border-gray-300 rounded-lg">
-                    <option value="menunggu">Menunggu Review</option>
-                    <option value="diterima">Diterima</option>
-                    <option value="proses">Sedang Magang</option>
-                    <option value="ditolak">Ditolak</option>
-                </select>
-                <button onclick="updateStatus()" class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700">Update Status</button>
-                <button onclick="closeModal()" class="bg-gray-300 text-gray-800 px-6 py-2 rounded-lg hover:bg-gray-400">Tutup</button>
-            </div>
-        </div>
-    </div>
-
     <script>
-        let currentPendaftarId = null;
+        // Live Search & Filter
+        const searchInput = document.getElementById('searchInput');
+        const filterStatus = document.getElementById('filterStatus');
+        const rows = document.querySelectorAll('#tablePendaftar tbody tr');
 
-        document.getElementById('statusFilter').addEventListener('change', loadPendaftar);
-        document.getElementById('search').addEventListener('keyup', loadPendaftar);
+        function filterTable() {
+            const query = searchInput.value.toLowerCase();
+            const status = filterStatus.value;
 
-        async function loadPendaftar() {
-            const search = document.getElementById('search').value;
-            const status = document.getElementById('statusFilter').value;
-            
-            try {
-                const response = await fetch(`<?php echo SITE_URL; ?>api/get-pendaftar?search=${search}&status=${status}`);
-                const data = await response.json();
-                
-                if (data.success) {
-                    renderTable(data.data.pendaftar);
-                }
-            } catch (error) {
-                console.error('Error:', error);
-            }
+            rows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                const rowStatus = row.querySelector('td:nth-child(6)')?.textContent.toLowerCase() || '';
+
+                const matchSearch = text.includes(query);
+                const matchStatus = !status || rowStatus.includes(status);
+
+                row.style.display = matchSearch && matchStatus ? '' : 'none';
+            });
         }
 
-        function renderTable(pendaftar) {
-            const tbody = document.getElementById('tableBody');
-            
-            if (pendaftar.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="7" class="text-center py-4 text-gray-500">Tidak ada data</td></tr>';
-                return;
-            }
+        searchInput.addEventListener('input', filterTable);
+        filterStatus.addEventListener('change', filterTable);
 
-            tbody.innerHTML = pendaftar.map((p, idx) => `
-                <tr class="border-b border-gray-200 hover:bg-gray-50">
-                    <td class="px-6 py-4 text-sm text-gray-800">${idx + 1}</td>
-                    <td class="px-6 py-4 text-sm text-gray-800">${p.nama}</td>
-                    <td class="px-6 py-4 text-sm text-gray-800">${p.nim || '-'}</td>
-                    <td class="px-6 py-4 text-sm text-gray-800">${p.jurusan || '-'}</td>
-                    <td class="px-6 py-4 text-sm text-gray-800">${p.universitas || '-'}</td>
-                    <td class="px-6 py-4 text-sm">${getBadgeStatus(p.status)}</td>
-                    <td class="px-6 py-4 text-sm">
-                        <button onclick="showDetail(${p.id}, '${p.status}')" class="text-blue-600 hover:text-blue-700 font-medium">Detail</button>
-                    </td>
-                </tr>
-            `).join('');
+        // Ubah Status
+        async function ubahStatus(id, status) {
+            if (!confirm(`Yakin ingin ${status === 'diterima' ? 'MENERIMA' : 'MENOLAK'} pendaftar ini?`)) return;
+
+            const res = await fetch(`<?= SITE_URL ?>api/set-status?id=${id}&status=${status}`);
+            const data = await res.json();
+
+            alert(data.message);
+            if (data.success) location.reload();
         }
-
-        function showDetail(id, status) {
-            currentPendaftarId = id;
-            document.getElementById('statusSelect').value = status;
-            document.getElementById('modalDetail').classList.remove('hidden');
-            // Load and display detail
-        }
-
-        function closeModal() {
-            document.getElementById('modalDetail').classList.add('hidden');
-        }
-
-        async function updateStatus() {
-            const status = document.getElementById('statusSelect').value;
-            // Call update API here
-            alert('Update status functionality coming soon');
-            closeModal();
-            loadPendaftar();
-        }
-
-        function getBadgeStatus(status) {
-            const badges = {
-                'menunggu': '<span class="px-3 py-1 bg-yellow-100 text-yellow-800 rounded-full text-xs font-medium">Menunggu</span>',
-                'diterima': '<span class="px-3 py-1 bg-green-100 text-green-800 rounded-full text-xs font-medium">Diterima</span>',
-                'ditolak': '<span class="px-3 py-1 bg-red-100 text-red-800 rounded-full text-xs font-medium">Ditolak</span>',
-                'proses': '<span class="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-xs font-medium">Proses</span>',
-            };
-            return badges[status] || '';
-        }
-
-        loadPendaftar();
     </script>
 </body>
 </html>
