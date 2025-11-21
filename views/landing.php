@@ -155,50 +155,7 @@
         </div>
     </div>
 
-    <!-- Features Section -->
-    <div class="py-12 md:py-16 lg:py-20 px-4 sm:px-6 lg:px-8">
-        <div class="max-w-7xl mx-auto">
-            <div class="text-center mb-12">
-                <h2 class="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-800 mb-4">Fitur Unggulan</h2>
-                <p class="text-base sm:text-lg text-gray-600">Kelola seluruh proses magang dengan sistem terintegrasi</p>
-            </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
-                <!-- Feature 1 -->
-                <div class="bg-white rounded-xl shadow-lg hover:shadow-xl transition p-6 md:p-8">
-                    <div class="w-14 h-14 md:w-16 md:h-16 bg-blue-100 rounded-lg flex items-center justify-center mb-4">
-                        <svg class="w-7 h-7 md:w-8 md:h-8 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
-                            <path d="M9 6a3 3 0 11-6 0 3 3 0 016 0z"/>
-                        </svg>
-                    </div>
-                    <h3 class="text-lg md:text-xl font-bold text-gray-800 mb-2">Dashboard Peserta</h3>
-                    <p class="text-sm md:text-base text-gray-600">Pantau status pendaftaran dan hasil evaluasi Anda secara real-time</p>
-                </div>
-
-                <!-- Feature 2 -->
-                <div class="bg-white rounded-xl shadow-lg hover:shadow-xl transition p-6 md:p-8">
-                    <div class="w-14 h-14 md:w-16 md:h-16 bg-green-100 rounded-lg flex items-center justify-center mb-4">
-                        <svg class="w-7 h-7 md:w-8 md:h-8 text-green-600" fill="currentColor" viewBox="0 0 20 20">
-                            <path d="M5 3a2 2 0 00-2 2v6h16V5a2 2 0 00-2-2H5z"/>
-                        </svg>
-                    </div>
-                    <h3 class="text-lg md:text-xl font-bold text-gray-800 mb-2">Panel Admin</h3>
-                    <p class="text-sm md:text-base text-gray-600">Kelola pendaftar, proses evaluasi, dan lihat laporan komprehensif</p>
-                </div>
-
-                <!-- Feature 3 -->
-                <div class="bg-white rounded-xl shadow-lg hover:shadow-xl transition p-6 md:p-8">
-                    <div class="w-14 h-14 md:w-16 md:h-16 bg-purple-100 rounded-lg flex items-center justify-center mb-4">
-                        <svg class="w-7 h-7 md:w-8 md:h-8 text-purple-600" fill="currentColor" viewBox="0 0 20 20">
-                            <path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4z"/>
-                        </svg>
-                    </div>
-                    <h3 class="text-lg md:text-xl font-bold text-gray-800 mb-2">Sistem Evaluasi</h3>
-                    <p class="text-sm md:text-base text-gray-600">Penilaian komprehensif mencakup kehadiran, kinerja, dan sikap</p>
-                </div>
-            </div>
-        </div>
-    </div>
 
     <!-- Stats Section dengan Counter Animation -->
     <div class="bg-gray-50 py-12 md:py-16 px-4 sm:px-6 lg:px-8">
@@ -269,7 +226,7 @@
                     </div>
                 </div>
                 <div>
-                    <img src="<?php echo SITE_URL; ?>src/images/Basic_Cemnting.jpg" alt="LEMIGAS" class="rounded-xl shadow-lg w-full h-auto">
+                    <img src="<?php echo SITE_URL; ?>src/images/background_lemigas2.jpg" alt="LEMIGAS" class="rounded-xl shadow-lg w-full h-auto">
                 </div>
             </div>
         </div>

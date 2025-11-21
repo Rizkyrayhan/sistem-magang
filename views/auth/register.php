@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Daftar - LEMIGAS Magang</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <style>
         .register-container {
             background: linear-gradient(180deg, rgba(255,255,255,0) 0%, rgba(37, 99, 235, 0.95) 100%),
@@ -164,6 +165,9 @@
 
                 <!-- Register Form -->
                 <div id="register-form">
+                    <a href="<?= SITE_URL ?>login" class="hidden md:inline-block text-blue-600 hover:text-blue-800 font-medium text-sm">
+                        <i class="fas fa-arrow-left mr-2"></i>Kembali
+                    </a>
                     <h2 class="text-2xl font-bold text-gray-800 mb-2">Buat Akun Baru</h2>
                     <p class="text-gray-600 text-sm mb-6">Daftar sebagai peserta magang</p>
 
