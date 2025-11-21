@@ -140,14 +140,12 @@ function asset_url($path = '') {
 
 /**
  * Generate URL yang aman untuk file yang diupload
- * Gunakan function ini untuk semua file di storage/uploads/
  */
 function file_url($db_path) {
     if (!$db_path) {
         return SITE_URL . 'assets/placeholder.png';
     }
     
-    // Path di database sudah berbentuk "storage/uploads/foto/xxx.jpg"
     return SITE_URL . 'view-file.php?file=' . urlencode($db_path);
 }
 
@@ -160,6 +158,170 @@ function json_response($success, $message, $data = null) {
         'data' => $data
     ]);
     exit;
+}
+
+// ============================================================================
+// UNIVERSITAS & BIDANG MINAT FUNCTIONS
+// ============================================================================
+
+/**
+ * Get semua universitas aktif dari database
+ */
+function getUniversitas($conn) {
+    if (!$conn) return [];
+    
+    try {
+        $result = $conn->query("
+            SELECT id, nama, provinsi, kota, tipe 
+            FROM universitas 
+            WHERE status = 'aktif' 
+            ORDER BY nama ASC
+        ");
+        
+        if (!$result) return [];
+        
+        $universitas = [];
+        while ($row = $result->fetch_assoc()) {
+            $universitas[] = $row;
+        }
+        return $universitas;
+    } catch (Exception $e) {
+        error_log("Error fetching universitas: " . $e->getMessage());
+        return [];
+    }
+}
+
+/**
+ * Get semua bidang minat aktif dari database
+ */
+function getBidangMinat($conn) {
+    if (!$conn) return [];
+    
+    try {
+        $result = $conn->query("
+            SELECT id, nama, deskripsi, divisi 
+            FROM bidang_minat 
+            WHERE status = 'aktif' 
+            ORDER BY divisi ASC, nama ASC
+        ");
+        
+        if (!$result) return [];
+        
+        $bidang = [];
+        while ($row = $result->fetch_assoc()) {
+            $bidang[] = $row;
+        }
+        return $bidang;
+    } catch (Exception $e) {
+        error_log("Error fetching bidang minat: " . $e->getMessage());
+        return [];
+    }
+}
+
+/**
+ * Get bidang minat grouped by divisi
+ */
+function getBidangMinatGrouped($conn) {
+    if (!$conn) return [];
+    
+    try {
+        $result = $conn->query("
+            SELECT id, nama, deskripsi, divisi 
+            FROM bidang_minat 
+            WHERE status = 'aktif' 
+            ORDER BY divisi ASC, nama ASC
+        ");
+        
+        if (!$result) return [];
+        
+        $grouped = [];
+        while ($row = $result->fetch_assoc()) {
+            $divisi = $row['divisi'] ?: 'Lainnya';
+            if (!isset($grouped[$divisi])) {
+                $grouped[$divisi] = [];
+            }
+            $grouped[$divisi][] = $row;
+        }
+        return $grouped;
+    } catch (Exception $e) {
+        error_log("Error fetching grouped bidang minat: " . $e->getMessage());
+        return [];
+    }
+}
+
+/**
+ * Get universitas grouped by tipe (Negeri/Swasta)
+ */
+function getUniversitasGrouped($conn) {
+    if (!$conn) return [];
+    
+    try {
+        $result = $conn->query("
+            SELECT id, nama, provinsi, kota, tipe 
+            FROM universitas 
+            WHERE status = 'aktif' 
+            ORDER BY tipe ASC, nama ASC
+        ");
+        
+        if (!$result) return [];
+        
+        $grouped = [];
+        while ($row = $result->fetch_assoc()) {
+            $tipe = $row['tipe'] ?: 'Lainnya';
+            if (!isset($grouped[$tipe])) {
+                $grouped[$tipe] = [];
+            }
+            $grouped[$tipe][] = $row;
+        }
+        return $grouped;
+    } catch (Exception $e) {
+        error_log("Error fetching grouped universitas: " . $e->getMessage());
+        return [];
+    }
+}
+
+/**
+ * Get nama universitas by ID
+ */
+function getUniversitasName($conn, $id) {
+    if (!$conn || !$id) return '';
+    
+    try {
+        $stmt = $conn->prepare("SELECT nama FROM universitas WHERE id = ? AND status = 'aktif'");
+        if (!$stmt) return '';
+        
+        $stmt->bind_param("i", $id);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $row = $result->fetch_assoc();
+        $stmt->close();
+        
+        return $row ? $row['nama'] : '';
+    } catch (Exception $e) {
+        return '';
+    }
+}
+
+/**
+ * Get nama bidang minat by ID
+ */
+function getBidangMinatName($conn, $id) {
+    if (!$conn || !$id) return '';
+    
+    try {
+        $stmt = $conn->prepare("SELECT nama FROM bidang_minat WHERE id = ? AND status = 'aktif'");
+        if (!$stmt) return '';
+        
+        $stmt->bind_param("i", $id);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $row = $result->fetch_assoc();
+        $stmt->close();
+        
+        return $row ? $row['nama'] : '';
+    } catch (Exception $e) {
+        return '';
+    }
 }
 
 // ============================================================================

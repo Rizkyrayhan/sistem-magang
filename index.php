@@ -72,7 +72,7 @@ $routes = [
     'api/upload'                => 'src/controllers/UploadController.php',
     'admin/export-excel'        => 'src/controllers/ExportExcel.php',
     'api/set-status'            => 'src/controllers/SetStatusController.php',
-
+    'api/delete-pendaftar'      => 'src/controllers/DeletePendaftar.php',
 
 
 
@@ -115,6 +115,7 @@ if (strpos($route, 'api/') === 0) {
         'admin/detail-pendaftar' => 'detailPendaftar',
         'admin/export-excel'     => 'exportExcel',
         'api/set-status'         => 'setStatus',
+        'api/delete-pendaftar'   => 'deletePendaftar',
     ];
     $_GET['action'] = $actionMap[$route] ?? '';
 }

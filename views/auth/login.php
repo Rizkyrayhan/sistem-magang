@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - LEMIGAS Magang</title>
     <script src="https://cdn.tailwindcss.com"></script>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <style>
         .login-container {
             background: linear-gradient(180deg, rgba(255,255,255,0) 0%, rgba(37, 99, 235, 0.95) 100%),
@@ -164,6 +165,9 @@
 
                 <!-- Login Form -->
                 <div id="login-form">
+                    <a href="<?= SITE_URL ?>../lemigas-magang/" class="hidden md:inline-block text-blue-600 hover:text-blue-800 font-medium text-sm">
+                        <i class="fas fa-arrow-left mr-2"></i>Kembali
+                    </a>
                     <h2 class="text-2xl font-bold text-gray-800 mb-2">Selamat Datang!</h2>
                     <p class="text-gray-600 text-sm mb-6">Silakan login untuk melanjutkan</p>
 
@@ -200,12 +204,12 @@
                             <div class="bg-blue-50 p-3 rounded-lg border border-blue-100">
                                 <p class="font-semibold text-blue-900">👤 Admin:</p>
                                 <p class="text-blue-700 mt-1">admin@lemigas.ac.id</p>
-                                <p class="text-blue-700">password</p>
+                                <p class="text-blue-700">admin123</p>
                             </div>
                             <div class="bg-green-50 p-3 rounded-lg border border-green-100">
                                 <p class="font-semibold text-green-900">👨‍🎓 Peserta:</p>
-                                <p class="text-green-700 mt-1">siti@mahasiswa.ac.id</p>
-                                <p class="text-green-700">password123</p>
+                                <p class="text-green-700 mt-1">peserta@gmail.com</p>
+                                <p class="text-green-700">peserta123</p>
                             </div>
                         </div>
                     </div>
